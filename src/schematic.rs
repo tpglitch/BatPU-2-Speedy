@@ -1,6 +1,6 @@
 pub fn make_schematic(
-    input_path: &str,
-    output_path: &str,
+    mc_filename: &str,
+    schem_filename: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
     println!("Coming soon");
     Ok(())
