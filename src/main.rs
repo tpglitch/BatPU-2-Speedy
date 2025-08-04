@@ -10,7 +10,7 @@ use assembler::assemble;
 use schematic::make_schematic;
 
 #[derive(Parser)]
-#[command(name = "batpu2-asm")]
+#[command(name = "batpu2-speedy")]
 #[command(about = "A BatPU-2 assembler that can generate machine code and Minecraft schematics")]
 #[command(version)]
 struct Cli {

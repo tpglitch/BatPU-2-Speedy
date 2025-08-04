@@ -1,5 +1,5 @@
 [package]
-name = "batpu2-asm"
+name = "batpu2-speedy"
 version = "1.0.0"
 edition = "2024"
 

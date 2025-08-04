@@ -59,7 +59,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "batpu2-asm"
+name = "batpu2-speedy"
 version = "1.0.0"
 dependencies = [
  "clap",
