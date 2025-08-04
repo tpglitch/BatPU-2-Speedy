@@ -14,12 +14,6 @@ pub fn make_schematic(
     let pos_list = generate_memory_positions();
     let lines = read_machine_code_lines(reader)?;
 
-    // Debug: Print first few positions
-    println!("First 5 positions:");
-    for (i, pos) in pos_list.iter().take(5).enumerate() {
-        println!("  Position {}: [{}, {}, {}]", i, pos[0], pos[1], pos[2]);
-    }
-
     // Create schematic structure
     let mut schematic = SchematicBuilder::new();
 
@@ -303,7 +297,6 @@ impl SchematicBuilder {
             }
         }
 
-        println!("DEBUG bounds → min={:?}, max={:?}", min, max);
         (min, max)
     }
 
@@ -349,12 +342,6 @@ impl SchematicBuilder {
         let width = (max[0] - min[0] + 1) as u16;
         let height = (max[1] - min[1] + 1) as u16;
         let length = (max[2] - min[2] + 1) as u16;
-
-        println!("Schematic bounds:");
-        println!("  Min: [{}, {}, {}]", min[0], min[1], min[2]);
-        println!("  Max: [{}, {}, {}]", max[0], max[1], max[2]);
-        println!("  Size: {}x{}x{}", width, height, length);
-        println!("  Total blocks placed: {}", self.blocks.len());
 
         // Build palette compound
         let mut palette_compound = HashMap::new();
