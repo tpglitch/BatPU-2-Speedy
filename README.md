@@ -79,7 +79,7 @@ For more information about the BatPU-2 architecture, see the [original video](ht
 
 ## Contributing
 
-Please feel free to submit issues and feature requests
+Please feel free to submit issues, feature requests, and pull requests.
 
 ## Links
 
