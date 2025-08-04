@@ -3,7 +3,5 @@ A speedy Rust-based assembler for the [BatPU-2 redstone computer](https://www.yo
 
 ## Current Features
 - Assemble `.S` (assembly) files to `.mc` (machine code) files.
-
-## Upcoming Features
 - Convert machine code into `.schem` (Sponge Schematic)
 - AIO `build` command to run `assemble` and `schematic` in one command
