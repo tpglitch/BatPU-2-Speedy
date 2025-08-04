@@ -12,7 +12,6 @@ BatPU-2-Speedy streamlines the development workflow for BatPU-2 programs by prov
 - **Schematic Generation**: Convert machine code into `.schem` (Sponge Schematic) files for direct Minecraft import
 - **Unified Build Process**: Use the `build` command to assemble and generate schematics in one step
 - **Fast Performance**: Rust implementation ensures quick compilation times
-- **Error Handling**: Clear error messages and robust file processing
 
 ## Quick Start
 
