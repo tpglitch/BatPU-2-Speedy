@@ -1,6 +1,6 @@
 # BatPU-2-Speedy
 
-A high-performance Rust-based assembler and toolchain for the [BatPU-2 redstone computer](https://www.youtube.com/watch?v=3gBZHXqnleU).
+A high-performance Rust-based assembler for the [BatPU-2 redstone computer](https://www.youtube.com/watch?v=3gBZHXqnleU).
 
 ## Overview
 
