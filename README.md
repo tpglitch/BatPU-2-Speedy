@@ -8,7 +8,7 @@ BatPU-2-Speedy streamlines the development workflow for BatPU-2 programs by prov
 
 ## Features
 
-- **Assembly**: Compile `.S` assembly files to `.mc` machine code files
+- **Assembly**: Compile `.s` assembly files to `.mc` machine code files
 - **Schematic Generation**: Convert machine code into `.schem` (Sponge Schematic) files for direct Minecraft import
 - **Unified Build Process**: Use the `build` command to assemble and generate schematics in one step
 - **Fast Performance**: Rust implementation ensures quick compilation times
@@ -36,13 +36,13 @@ cargo build --release
 
 ```bash
 # Assemble an assembly file
-batpu2-speedy assemble -i input.S -o output.mc
+batpu2-speedy assemble -i input.s -o output.mc
 
 # Generate a schematic from machine code
 batpu2-speedy schematic -i input.mc -o output.schem
 
 # Build everything at once
-batpu2-speedy build -i input.S -o program.schem
+batpu2-speedy build -i input.s -o program.schem
 ```
 
 ## Commands
@@ -67,7 +67,7 @@ batpu2-speedy build -i <input.S> [options]
 
 ## File Formats
 
-- **`.S`** - Assembly source files containing BatPU-2 assembly code
+- **`.s`** - Assembly source files containing BatPU-2 assembly code
 - **`.mc`** - Machine code files (intermediate binary format)
 - **`.schem`** - Sponge Schematic files for Minecraft WorldEdit/Litematica
 
