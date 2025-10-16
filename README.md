@@ -82,7 +82,7 @@ For more information about the BatPU-2 architecture, see the [original video](ht
 Please feel free to submit issues, feature requests, and pull requests.
 
 ## License
-This project is licensed under the MIT license. Read the [LICENSE](./LICENSE) file for more information
+This project is licensed under the MIT license. Read the [LICENSE](./LICENSE) file for more information.
 
 ## Links
 
