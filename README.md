@@ -67,7 +67,7 @@ batpu2-speedy build -i <input.S> [options]
 
 ## File Formats
 
-- **`.s`** - Assembly source files containing BatPU-2 assembly code
+- **`.s`** - Assembly source files containing BatPU-2 assembly code (or `.S`, `.as`, `.asm`, etc.)
 - **`.mc`** - Machine code files (intermediate binary format)
 - **`.schem`** - Sponge Schematic files for Minecraft WorldEdit/Litematica
 
