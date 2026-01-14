@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BatPU-2 Architecture Reference</title>
+    <style>
+      body {
+        font-family: monospace;
+        margin: 20px;
+        line-height: 1.5;
+      }
+
+      h1 {
+        border-bottom: 2px solid black;
+      }
+
+      h2 {
+        border-bottom: 1px solid black;
+        margin-top: 30px;
+      }
+
+      table {
+        border-collapse: collapse;
+        margin: 10px 0;
+      }
+
+      th,
+      td {
+        border: 1px solid black;
+        padding: 5px;
+        text-align: left;
+      }
+
+      th {
+        font-weight: bold;
+      }
+
+      pre {
+        border: 1px solid black;
+        padding: 10px;
+        overflow-x: auto;
+      }
+
+      ul {
+        margin: 5px 0;
+      }
+    </style>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <h1>BatPU-2 ARCHITECTURE REFERENCE MANUAL</h1>
+
+    <h2>1. SYSTEM SPECIFICATIONS</h2>
+
+    <p><strong>Registers:</strong></p>
+    <ul>
+      <li>16 general-purpose 8-bit registers (r0-r15)</li>
+      <li>
+        r0 is hardwired to zero (writes are ignored, reads always return 0)
+      </li>
+    </ul>
+
+    <p><strong>Memory Architecture:</strong></p>
+    <ul>
+      <li><strong>Data Memory:</strong> 256 bytes (8-bit address space)</li>
+      <li>
+        <strong>Instruction Memory:</strong> 2048 bytes (10-bit address, 2 bytes
+        per instruction)
+      </li>
+      <li>
+        <strong>Memory-Mapped I/O:</strong> Addresses 240-255 reserved for
+        device mapping
+      </li>
+    </ul>
+
+    <p><strong>ALU Features:</strong></p>
+    <ul>
+      <li>
+        Operations: Addition, Subtraction, Bitwise AND/NOR/XOR, Logical Right
+        Shift
+      </li>
+      <li>
+        2 Status Flags: <strong>Z</strong> (Zero), <strong>C</strong> (Carry)
+      </li>
+    </ul>
+
+    <p><strong>Call Stack:</strong></p>
+    <ul>
+      <li>Hardware stack for subroutine calls</li>
+      <li>Maximum depth: 16 levels</li>
+    </ul>
+
+    <h2>2. INSTRUCTION SET</h2>
+
+    <p><strong>Instruction Format (16 bits):</strong></p>
+    <pre><code>Byte 1: [Opcode(4)] [Operand Fields(4)]
+Byte 2: [Operand Fields(8)]</code></pre>
+
+    <h3>2.1 Core Instructions</h3>
+
+    <table>
+      <tr>
+        <th>Mnemonic</th>
+        <th>Description</th>
+        <th>Operands</th>
+        <th>Flags</th>
+        <th>Operation</th>
+      </tr>
+      <tr>
+        <td class="code">NOP</td>
+        <td>No operation</td>
+        <td>-</td>
+        <td>No</td>
+        <td>Do nothing</td>
+      </tr>
+      <tr>
+        <td class="code">HLT</td>
+        <td>Halt execution</td>
+        <td>-</td>
+        <td>No</td>
+        <td>Stop program execution</td>
+      </tr>
+      <tr>
+        <td class="code">ADD</td>
+        <td>Addition</td>
+        <td>Reg A, Reg B, Reg C</td>
+        <td>Yes</td>
+        <td>C &lt;- A + B</td>
+      </tr>
+      <tr>
+        <td class="code">SUB</td>
+        <td>Subtraction</td>
+        <td>Reg A, Reg B, Reg C</td>
+        <td>Yes</td>
+        <td>C &lt;- A - B</td>
+      </tr>
+      <tr>
+        <td class="code">NOR</td>
+        <td>Bitwise NOR</td>
+        <td>Reg A, Reg B, Reg C</td>
+        <td>Yes</td>
+        <td>C &lt;- !(A | B)</td>
+      </tr>
+      <tr>
+        <td class="code">AND</td>
+        <td>Bitwise AND</td>
+        <td>Reg A, Reg B, Reg C</td>
+        <td>Yes</td>
+        <td>C &lt;- A &amp; B</td>
+      </tr>
+      <tr>
+        <td class="code">XOR</td>
+        <td>Bitwise XOR</td>
+        <td>Reg A, Reg B, Reg C</td>
+        <td>Yes</td>
+        <td>C &lt;- A ^ B</td>
+      </tr>
+      <tr>
+        <td class="code">RSH</td>
+        <td>Logical Right Shift</td>
+        <td>Reg A, Reg C</td>
+        <td>No</td>
+        <td>C &lt;- A &gt;&gt; 1</td>
+      </tr>
+    </table>
+
+    <h3>2.2 Data Transfer Instructions</h3>
+
+    <table>
+      <tr>
+        <th>Mnemonic</th>
+        <th>Description</th>
+        <th>Operands</th>
+        <th>Flags</th>
+        <th>Operation</th>
+      </tr>
+      <tr>
+        <td class="code">LDI</td>
+        <td>Load Immediate</td>
+        <td>Reg A, Immediate (8-bit)</td>
+        <td>No</td>
+        <td>A &lt;- Immediate</td>
+      </tr>
+      <tr>
+        <td class="code">ADI</td>
+        <td>Add Immediate</td>
+        <td>Reg A, Immediate (8-bit)</td>
+        <td>Yes</td>
+        <td>A &lt;- A + Immediate</td>
+      </tr>
+      <tr>
+        <td class="code">LOD</td>
+        <td>Memory Load</td>
+        <td>Reg A, Reg B, Offset (4-bit)</td>
+        <td>No</td>
+        <td>B &lt;- Mem[A + Offset]</td>
+      </tr>
+      <tr>
+        <td class="code">STR</td>
+        <td>Memory Store</td>
+        <td>Reg A, Reg B, Offset (4-bit)</td>
+        <td>No</td>
+        <td>Mem[A + Offset] &lt;- B</td>
+      </tr>
+    </table>
+
+    <div>
+      <strong>NOTE:</strong> The offset in LOD/STR is a signed 4-bit value (-8
+      to +7).
+    </div>
+
+    <h3>2.3 Control Flow Instructions</h3>
+
+    <table>
+      <tr>
+        <th>Mnemonic</th>
+        <th>Description</th>
+        <th>Operands</th>
+        <th>Flags</th>
+        <th>Operation</th>
+      </tr>
+      <tr>
+        <td class="code">JMP</td>
+        <td>Unconditional Jump</td>
+        <td>Address (10-bit)</td>
+        <td>No</td>
+        <td>PC &lt;- Address</td>
+      </tr>
+      <tr>
+        <td class="code">BRH</td>
+        <td>Conditional Branch</td>
+        <td>Condition, Address (10-bit)</td>
+        <td>No</td>
+        <td>PC &lt;- Cond ? Address : PC + 1</td>
+      </tr>
+      <tr>
+        <td class="code">CAL</td>
+        <td>Call Subroutine</td>
+        <td>Address (10-bit)</td>
+        <td>No</td>
+        <td>Push(PC+1); PC &lt;- Address</td>
+      </tr>
+      <tr>
+        <td class="code">RET</td>
+        <td>Return from Subroutine</td>
+        <td>-</td>
+        <td>No</td>
+        <td>PC &lt;- Pop()</td>
+      </tr>
+    </table>
+
+    <h3>2.4 Branch Conditions</h3>
+
+    <table>
+      <tr>
+        <th>Condition</th>
+        <th>Aliases</th>
+        <th>Test</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td class="code">eq</td>
+        <td class="code">z, zero, =</td>
+        <td>Z = 1</td>
+        <td>Equal / Zero</td>
+      </tr>
+      <tr>
+        <td class="code">ne</td>
+        <td class="code">nz, notzero, !=</td>
+        <td>Z = 0</td>
+        <td>Not Equal / Not Zero</td>
+      </tr>
+      <tr>
+        <td class="code">ge</td>
+        <td class="code">c, carry, &gt;=</td>
+        <td>C = 1</td>
+        <td>Greater or Equal / Carry</td>
+      </tr>
+      <tr>
+        <td class="code">lt</td>
+        <td class="code">nc, notcarry, &lt;</td>
+        <td>C = 0</td>
+        <td>Less Than / No Carry</td>
+      </tr>
+    </table>
+
+    <h2>3. PSEUDO-INSTRUCTIONS</h2>
+
+    <div>
+      <strong>NOTE:</strong> Pseudo-instructions are assembler macros that
+      expand to real instructions.
+    </div>
+
+    <table>
+      <tr>
+        <th>Mnemonic</th>
+        <th>Description</th>
+        <th>Syntax</th>
+        <th>Expansion</th>
+        <th>Operation</th>
+      </tr>
+      <tr>
+        <td class="code">CMP</td>
+        <td>Compare</td>
+        <td>CMP A, B</td>
+        <td>SUB A, B, r0</td>
+        <td>A - B (sets flags)</td>
+      </tr>
+      <tr>
+        <td class="code">MOV</td>
+        <td>Move</td>
+        <td>MOV A, C</td>
+        <td>ADD A, r0, C</td>
+        <td>C &lt;- A</td>
+      </tr>
+      <tr>
+        <td class="code">LSH</td>
+        <td>Logical Left Shift</td>
+        <td>LSH A, C</td>
+        <td>ADD A, A, C</td>
+        <td>C &lt;- A &lt;&lt; 1</td>
+      </tr>
+      <tr>
+        <td class="code">INC</td>
+        <td>Increment</td>
+        <td>INC A</td>
+        <td>ADI A, 1</td>
+        <td>A &lt;- A + 1</td>
+      </tr>
+      <tr>
+        <td class="code">DEC</td>
+        <td>Decrement</td>
+        <td>DEC A</td>
+        <td>ADI A, -1</td>
+        <td>A &lt;- A - 1</td>
+      </tr>
+      <tr>
+        <td class="code">NOT</td>
+        <td>Bitwise NOT</td>
+        <td>NOT A, C</td>
+        <td>NOR A, r0, C</td>
+        <td>C &lt;- !A</td>
+      </tr>
+      <tr>
+        <td class="code">NEG</td>
+        <td>Negate</td>
+        <td>NEG A, C</td>
+        <td>SUB r0, A, C</td>
+        <td>C &lt;- 0 - A</td>
+      </tr>
+    </table>
+
+    <h2>4. MEMORY-MAPPED I/O DEVICES</h2>
+
+    <div>
+      <strong>WARNING:</strong> Addresses 240-255 are reserved for memory-mapped
+      I/O. Do not use these addresses for general data storage.
+    </div>
+
+    <h3>4.1 Screen Device (32x32 Lamp Display)</h3>
+
+    <table>
+      <tr>
+        <th>Address</th>
+        <th>Name</th>
+        <th>Access</th>
+        <th>Function</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>240</td>
+        <td>Pixel X</td>
+        <td>Store</td>
+        <td>Set X coordinate</td>
+        <td>Bottom 5 bits used (0-31)</td>
+      </tr>
+      <tr>
+        <td>241</td>
+        <td>Pixel Y</td>
+        <td>Store</td>
+        <td>Set Y coordinate</td>
+        <td>Bottom 5 bits used (0-31)</td>
+      </tr>
+      <tr>
+        <td>242</td>
+        <td>Draw Pixel</td>
+        <td>Store</td>
+        <td>Draw pixel at (X, Y)</td>
+        <td>Writes to screen buffer</td>
+      </tr>
+      <tr>
+        <td>243</td>
+        <td>Clear Pixel</td>
+        <td>Store</td>
+        <td>Clear pixel at (X, Y)</td>
+        <td>Erases from screen buffer</td>
+      </tr>
+      <tr>
+        <td>244</td>
+        <td>Load Pixel</td>
+        <td>Load</td>
+        <td>Read pixel at (X, Y)</td>
+        <td>Returns 0 or 1</td>
+      </tr>
+      <tr>
+        <td>245</td>
+        <td>Buffer Screen</td>
+        <td>Store</td>
+        <td>Push buffer to display</td>
+        <td>Makes changes visible</td>
+      </tr>
+      <tr>
+        <td>246</td>
+        <td>Clear Screen Buffer</td>
+        <td>Store</td>
+        <td>Clear entire buffer</td>
+        <td>Does not affect display until buffered</td>
+      </tr>
+    </table>
+
+    <h3>4.2 Character Display (10 Characters)</h3>
+
+    <table>
+      <tr>
+        <th>Address</th>
+        <th>Name</th>
+        <th>Access</th>
+        <th>Function</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>247</td>
+        <td>Write Char</td>
+        <td>Store</td>
+        <td>Write character</td>
+        <td>Adds character to buffer</td>
+      </tr>
+      <tr>
+        <td>248</td>
+        <td>Buffer Chars</td>
+        <td>Store</td>
+        <td>Push buffer to display</td>
+        <td>Shows buffered text</td>
+      </tr>
+      <tr>
+        <td>249</td>
+        <td>Clear Chars Buffer</td>
+        <td>Store</td>
+        <td>Clear character buffer</td>
+        <td>Empties text buffer</td>
+      </tr>
+    </table>
+
+    <div>
+      <strong>Character Set:</strong> Supports lowercase a-z, space, period,
+      exclamation mark, and question mark. Characters are mapped: space=0, a=1,
+      b=2, ..., z=26, .=27, !=28, ?=29
+    </div>
+
+    <h3>4.3 Number Display (8-bit Signed/Unsigned)</h3>
+
+    <table>
+      <tr>
+        <th>Address</th>
+        <th>Name</th>
+        <th>Access</th>
+        <th>Function</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>250</td>
+        <td>Show Number</td>
+        <td>Store</td>
+        <td>Display 8-bit number</td>
+        <td>Shows stored value</td>
+      </tr>
+      <tr>
+        <td>251</td>
+        <td>Clear Number</td>
+        <td>Store</td>
+        <td>Clear number display</td>
+        <td>Removes displayed number</td>
+      </tr>
+      <tr>
+        <td>252</td>
+        <td>Signed Mode</td>
+        <td>Store</td>
+        <td>Set signed interpretation</td>
+        <td>Range: -128 to 127</td>
+      </tr>
+      <tr>
+        <td>253</td>
+        <td>Unsigned Mode</td>
+        <td>Store</td>
+        <td>Set unsigned interpretation</td>
+        <td>Range: 0 to 255</td>
+      </tr>
+    </table>
+
+    <h3>4.4 Random Number Generator (LFSR)</h3>
+
+    <table>
+      <tr>
+        <th>Address</th>
+        <th>Name</th>
+        <th>Access</th>
+        <th>Function</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>254</td>
+        <td>RNG</td>
+        <td>Load</td>
+        <td>Get random 8-bit number</td>
+        <td>Linear Feedback Shift Register</td>
+      </tr>
+    </table>
+
+    <h3>4.5 Input Controller</h3>
+
+    <table>
+      <tr>
+        <th>Address</th>
+        <th>Name</th>
+        <th>Access</th>
+        <th>Function</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>255</td>
+        <td>Controller Input</td>
+        <td>Load</td>
+        <td>Read controller state</td>
+        <td>8 buttons: Start, Select, A, B, Up, Right, Down, Left</td>
+      </tr>
+    </table>
+
+    <p><strong>Controller Input Bit Layout:</strong></p>
+    <pre><code>Bit 7: (unused)
+Bit 6: (unused)
+Bit 5: Start
+Bit 4: Select
+Bit 3: A Button
+Bit 2: B Button
+Bit 1: Up
+Bit 0: Right
+Down: (next bit pattern)
+Left: (next bit pattern)</code></pre>
+
+    <h2>5. PROGRAMMING EXAMPLES</h2>
+
+    <h3>5.1 Hello World (Legacy Syntax)</h3>
+    <pre><code class="language-nasm">// Clear character buffer
+LDI r15 249
+STR r15 r0
+
+// Write "HELLO"
+LDI r15 247
+LDI r14 7    ; 'h'
+STR r15 r14
+LDI r14 4    ; 'e'
+STR r15 r14
+LDI r14 11   ; 'l'
+STR r15 r14
+STR r15 r14
+LDI r14 14   ; 'o'
+STR r15 r14
+
+// Display
+LDI r15 248
+STR r15 r0
+HLT</code></pre>
+
+    <h3>5.2 Loop Example (Modern Syntax)</h3>
+    <pre><code class="language-nasm">main:
+    ldi r1, 10       ; Counter
+
+loop:
+    ; Your loop code here
+    dec r1           ; Decrement counter
+    brh nz, loop     ; Branch if not zero
+    hlt              ; End program</code></pre>
+
+    <h3>5.3 Subroutine Call Example</h3>
+    <pre><code class="language-nasm">main:
+    ldi r1, 42           ; Load argument
+    cal my_function      ; Call subroutine
+    hlt                  ; Program end
+
+my_function:
+    add r1, r1, r2       ; r2 = r1 * 2
+    ret                  ; Return to caller</code></pre>
+
+    <h2>6. ASSEMBLY LANGUAGE SYNTAX</h2>
+
+    <h3>6.1 Modern Syntax Features</h3>
+    <ul>
+      <li>
+        <strong>Labels:</strong> <span class="code">label:</span> format (with
+        colon)
+      </li>
+      <li>
+        <strong>Comments:</strong> <span class="code">;</span>,
+        <span class="code">//</span>, or <span class="code">#</span>
+      </li>
+      <li><strong>Comma separators:</strong> Optional, for readability</li>
+      <li>
+        <strong>Number formats:</strong> Decimal,
+        <span class="code">0xFF</span> (hex),
+        <span class="code">0b11111111</span> (binary)
+      </li>
+    </ul>
+
+    <h3>6.2 Data Directives</h3>
+    <table>
+      <tr>
+        <th>Directive</th>
+        <th>Description</th>
+        <th>Example</th>
+      </tr>
+      <tr>
+        <td class="code">.db / .byte</td>
+        <td>Define byte(s)</td>
+        <td class="code">.db 1, 2, 3, "Hello"</td>
+      </tr>
+      <tr>
+        <td class="code">.dw / .word</td>
+        <td>Define 16-bit word(s)</td>
+        <td class="code">.dw 0x1234, 0xABCD</td>
+      </tr>
+      <tr>
+        <td class="code">.ascii</td>
+        <td>ASCII string (no null)</td>
+        <td class="code">.ascii "Hello"</td>
+      </tr>
+      <tr>
+        <td class="code">.asciz / .string</td>
+        <td>Null-terminated string</td>
+        <td class="code">.asciz "Hello"</td>
+      </tr>
+      <tr>
+        <td class="code">define / .equ</td>
+        <td>Define constant</td>
+        <td class="code">define MAX_SIZE 255</td>
+      </tr>
+    </table>
+
+    <h3>6.3 Legacy Syntax (Still Supported)</h3>
+    <ul>
+      <li>
+        <strong>Labels:</strong> <span class="code">.label</span> format (with
+        dot prefix)
+      </li>
+      <li><strong>Comments:</strong> <span class="code">//</span> only</li>
+      <li><strong>No comma separators</strong></li>
+      <li><strong>Uppercase mnemonics</strong> (convention)</li>
+    </ul>
+
+    <h2>7. TECHNICAL NOTES</h2>
+
+    <div>
+      <h4>Register r0 Behavior</h4>
+      <ul>
+        <li>Always reads as 0</li>
+        <li>Writes are silently discarded</li>
+        <li>Useful as a source of constant zero</li>
+        <li>Commonly used with pseudo-instructions</li>
+      </ul>
+    </div>
+
+    <div>
+      <h4>Memory-Mapped I/O Best Practices</h4>
+      <ul>
+        <li>Always buffer graphics operations before displaying</li>
+        <li>Use sequential writes for efficiency</li>
+        <li>Controller input should be polled, not assumed continuous</li>
+        <li>RNG reads generate new values each time</li>
+      </ul>
+    </div>
+
+    <div>
+      <h4>Stack Overflow Protection</h4>
+      <ul>
+        <li>Maximum 16 nested calls</li>
+        <li>Exceeding depth causes undefined behavior</li>
+        <li>Keep subroutine nesting shallow</li>
+        <li>Use iterative solutions when possible</li>
+      </ul>
+    </div>
+
+    <div>
+      <strong>IMPORTANT:</strong> The BatPU-2 has no interrupt system. All I/O
+      must be polled explicitly.
+    </div>
+
+    <hr style="border: 2px solid #333; margin: 30px 0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-nasm.min.js"></script>
+  </body>
+</html>

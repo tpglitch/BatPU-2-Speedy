@@ -71,6 +71,84 @@ batpu2-speedy build -i <input.S> [options]
 - **`.mc`** - Machine code files (intermediate binary format)
 - **`.schem`** - Sponge Schematic files for Minecraft WorldEdit/Litematica
 
+## Assembly Language Syntax
+
+BatPU-2-Speedy supports both legacy and modern assembly syntax:
+
+### Modern Syntax Features
+
+- **Labels with colons**: `main:` or `loop:` (instead of `.main` or `.loop`)
+- **Semicolon comments**: `;` in addition to `//` and `#`
+- **Comma separators**: `add r1, r2, r3` (optional, for readability)
+- **Data directives**:
+  - `.db` / `.byte` - Define bytes
+  - `.dw` / `.word` - Define 16-bit words
+  - `.ascii` - ASCII string (no null terminator)
+  - `.asciz` / `.string` - ASCII string with null terminator
+- **String literals in data**: `.db "Hello"` expands to individual bytes
+- **Multiple define styles**: `define`, `.equ`, or `.define`
+- **Hex and binary numbers**: `0xFF`, `0b11111111`
+
+### Example: Modern Syntax
+
+```assembly
+; Hello World using modern syntax
+main:
+    ldi r15, clear_chars_buffer
+    str r15, r0
+
+    ldi r1, message         ; Pointer to message
+    ldi r2, 10              ; Message length
+    ldi r15, write_char
+
+print_loop:
+    lod r1, r14, 0
+    str r15, r14
+    inc r1
+    dec r2
+    brh nz, print_loop
+
+    ldi r15, buffer_chars
+    str r15, r0
+    hlt
+
+message:
+    .db 7, 4, 11, 11, 14    ; "HELLO"
+```
+
+### Legacy Syntax
+
+The assembler remains fully backward compatible with the original syntax:
+
+```assembly
+// Hello World using legacy syntax
+.main
+    LDI r15 write_char
+    LDI r14 "H"
+    STR r15 r14
+    LDI r14 "E"
+    STR r15 r14
+    // ... etc
+    HLT
+```
+
+### Supported Instructions
+
+All BatPU-2 instructions are supported:
+- Arithmetic: `ADD`, `SUB`, `ADI`
+- Logic: `NOR`, `AND`, `XOR`, `RSH`
+- Memory: `LDI`, `LOD`, `STR`
+- Control: `JMP`, `BRH`, `CAL`, `RET`
+- Special: `NOP`, `HLT`
+
+Pseudo-instructions:
+- `CMP` - Compare (SUB with r0 destination)
+- `MOV` - Move (ADD with r0)
+- `LSH` - Left shift
+- `INC` / `DEC` - Increment/decrement
+- `NOT` - Bitwise NOT
+- `NEG` - Negate
+
 ## BatPU-2 Architecture
 
 The BatPU-2 is a redstone computer architecture created for Minecraft. This assembler supports the full BatPU-2 instruction set and generates compatible machine code.
