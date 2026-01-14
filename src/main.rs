@@ -57,7 +57,10 @@ fn main() {
 
     match cli.command {
         Commands::Assemble { input, output } => {
-            let output = output.unwrap_or_else(|| "output.mc".to_string());
+            let output = output.unwrap_or_else(|| {
+                let base = Path::new(&input).file_stem().unwrap().to_str().unwrap();
+                format!("{}.mc", base)
+            });
             if let Err(e) = assemble(&input, &output) {
                 eprintln!("Assembly failed: {}", e);
                 process::exit(1);
