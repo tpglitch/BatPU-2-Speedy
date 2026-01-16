@@ -2,12 +2,7 @@ use clap::{Parser, Subcommand};
 use std::path::Path;
 use std::process;
 
-mod assembler;
-mod schematic;
-mod symbols;
-
-use assembler::assemble;
-use schematic::make_schematic;
+use batpu2_se::{assemble, make_schematic};
 
 #[derive(Parser)]
 #[command(name = "batpu2-speedy")]

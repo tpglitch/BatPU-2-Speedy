@@ -5,5 +5,4 @@ edition = "2024"
 
 [dependencies]
 clap = { version = "4.4", features = ["derive"] }
-fastnbt = "2.5.0"
-flate2 = "1.1.2"
+batpu2-se = { git = "https://github.com/tpglitch/BatPU-2-SE" }

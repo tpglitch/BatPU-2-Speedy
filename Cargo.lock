@@ -59,12 +59,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "batpu2-se"
+version = "1.0.0"
+source = "git+https://github.com/tpglitch/BatPU-2-SE#c4c2893cb9d863d8c2ac5377672cd70e26c20ec6"
+dependencies = [
+ "fastnbt",
+ "flate2",
+]
+
+[[package]]
 name = "batpu2-speedy"
 version = "2.0.1"
 dependencies = [
+ "batpu2-se",
  "clap",
- "fastnbt",
- "flate2",
 ]
 
 [[package]]
